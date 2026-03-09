@@ -33,6 +33,10 @@ li.innerHTML = `
 class="text-red-500 hover:text-red-600 transition">
 <i class="bi bi-trash"></i>
 </button>
+<button onclick="editNote(${index})"
+class="text-blue-500 hover:text-blue-600 mr-2">
+<i class="bi bi-pencil"></i>
+</button>
 `;
 
 notesList.appendChild(li);
@@ -115,5 +119,20 @@ profileImage.src = savedImage;
 
 }
 
+
+function eidtNote(index){
+    const newNote = prompt("Edit your note", notes[index]);
+
+    if(newNote !== null){
+        notes[index] = newNote;
+
+        localStorage.setItem("notes", JSON.stringify(notes));
+        
+        showNotes();
+    }
+}
+
 loadProfile();
 showNotes();
+
+
