@@ -6,23 +6,36 @@ let notes = JSON.parse(localStorage.getItem("notes")) || [];
 function showNotes(){
 notesList.innerHTML = "";
 
-
+const userName = localStorage.getItem("profileName") || "User";
 
 notes.forEach((note, index) => {
-  const li = document.createElement("li");
 
-  li.className = "flex justify-between items-center bg-white p-3 rounded-xl shadow hover:shadow-lg transition mb-2";
+const li = document.createElement("li");
 
-  li.innerHTML = `
-    <span class="text-gray-700 break-words">${note}</span>
-    <button onclick="deleteNote(${index})" class="text-red-500 hover:text-red-600 transition">
-      <i class="bi bi-trash"></i>
-    </button>
-  `;
+li.className = "bg-white p-3 rounded-xl shadow hover:shadow-lg transition mb-2";
 
-  notesList.appendChild(li);
+li.innerHTML = `
+<div class="flex justify-between items-start">
+
+<div>
+
+<p class="text-xs text-gray-400 mb-1">${userName}</p>
+
+<p class="text-gray-700 break-words">${note}</p>
+
+</div>
+
+<button onclick="deleteNote(${index})" 
+class="text-red-500 hover:text-red-600 transition">
+<i class="bi bi-trash"></i>
+</button>
+
+</div>
+`;
+
+notesList.appendChild(li);
+
 });
-
 }
 
 function addNote(){
