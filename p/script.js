@@ -2,9 +2,9 @@ const div = document.createElement("div");
 
 div.innerHTML = `
 
-<div class="bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl w-full max-w-xl p-6 sm:p-8">
+<div class="bg-white/80 backdrop-blur-lg shadow-2xl rounded-3xl w-full max-w-xl p-6">
 
-<h1 class="text-2xl sm:text-3xl font-bold text-center mb-6 flex items-center justify-center gap-2">
+<h1 class="text-3xl font-bold text-center mb-6 flex items-center justify-center gap-2">
 <i class="bi bi-journal-text text-blue-500"></i>
 My Notes
 </h1>
@@ -45,24 +45,22 @@ Update Profile
 
 </div>
 
-<div class="flex gap-2 sm:gap-3 mb-6">
+<div class="flex gap-3 mb-6">
 
 <input 
 id="noteInput"
 type="text"
 placeholder="Write your note..."
-class="input input-bordered w-full rounded-xl"
+class="input input-bordered w-full"
 />
 
-<button 
-onclick="addNote()" 
-class="btn btn-primary rounded-xl px-4 sm:px-6">
+<button onclick="addNote()" class="btn btn-primary">
 <i class="bi bi-plus-lg"></i>
 </button>
 
 </div>
 
-<ul id="notesList" class="space-y-3 text-gray-700"></ul>
+<ul id="notesList" class="space-y-3"></ul>
 
 <p id="emptyMsg" class="text-center text-gray-400 text-sm mt-6">
 No notes yet
@@ -74,7 +72,6 @@ No notes yet
 document.body.appendChild(div);
 
 
-// DOM load হওয়ার পর element ধরছি
 const noteInput = document.getElementById("noteInput");
 const notesList = document.getElementById("notesList");
 const emptyMsg = document.getElementById("emptyMsg");
@@ -83,6 +80,8 @@ const profileName = document.getElementById("profileName");
 const profileImage = document.getElementById("profileImage");
 const profileUpload = document.getElementById("profileUpload");
 const displayName = document.getElementById("displayName");
+
+const themeToggle = document.getElementById("themeToggle");
 
 
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
@@ -101,19 +100,25 @@ notes.forEach((note, index) => {
 
 const li = document.createElement("li");
 
-li.className = "flex justify-between items-center bg-white p-3 rounded-xl shadow hover:shadow-lg transition";
+li.className =
+"flex justify-between items-start bg-white p-3 rounded-xl shadow";
 
 li.innerHTML = `
-<span class="text-gray-700 break-words">${note}</span>
+<div class="flex flex-col flex-1">
+<span class="text-gray-700">${note.text}</span>
+<span class="text-xs text-gray-400">${note.date}</span>
+</div>
 
 <div class="flex gap-2">
-<button onclick="editNote(${index})" class="text-blue-500 hover:text-blue-600">
+
+<button onclick="editNote(${index})" class="text-blue-500">
 <i class="bi bi-pencil"></i>
 </button>
 
-<button onclick="deleteNote(${index})" class="text-red-500 hover:text-red-600">
+<button onclick="deleteNote(${index})" class="text-red-500">
 <i class="bi bi-trash"></i>
 </button>
+
 </div>
 `;
 
@@ -129,7 +134,12 @@ const note = noteInput.value.trim();
 
 if(note === "") return;
 
-notes.push(note);
+const noteObj = {
+text: note,
+date: new Date().toLocaleString()
+};
+
+notes.push(noteObj);
 
 localStorage.setItem("notes", JSON.stringify(notes));
 
@@ -141,7 +151,7 @@ showNotes();
 
 function deleteNote(index){
 
-notes.splice(index, 1);
+notes.splice(index,1);
 
 localStorage.setItem("notes", JSON.stringify(notes));
 
@@ -151,11 +161,12 @@ showNotes();
 
 function editNote(index){
 
-const newNote = prompt("Edit your note", notes[index]);
+const newNote = prompt("Edit note", notes[index].text);
 
 if(newNote !== null){
 
-notes[index] = newNote;
+notes[index].text = newNote;
+notes[index].date = new Date().toLocaleString();
 
 localStorage.setItem("notes", JSON.stringify(notes));
 
@@ -170,8 +181,10 @@ function saveProfile(){
 const name = profileName.value;
 
 if(name){
+
 localStorage.setItem("profileName", name);
 displayName.innerText = name;
+
 }
 
 const file = profileUpload.files[0];
@@ -209,5 +222,33 @@ profileImage.src = savedImage;
 
 }
 
+function loadTheme(){
+
+const savedTheme = localStorage.getItem("theme");
+
+if(savedTheme){
+
+document.documentElement.setAttribute("data-theme", savedTheme);
+
+if(savedTheme === "dark"){
+themeToggle.checked = true;
+}
+
+}
+
+}
+
+themeToggle.addEventListener("change", () => {
+
+const theme = themeToggle.checked ? "dark" : "light";
+
+document.documentElement.setAttribute("data-theme", theme);
+
+localStorage.setItem("theme", theme);
+
+});
+
+
+loadTheme();
 loadProfile();
 showNotes();
